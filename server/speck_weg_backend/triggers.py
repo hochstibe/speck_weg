@@ -105,8 +105,6 @@ CREATE TRIGGER update_exercise_score
 
 # Before inserting /updating a workout_session
 # set the attribute score
-# todo: only one select statement (add another join)
-# todo: select the count of tpe's for each session
 update_session_score_func = DDL("""
 CREATE OR REPLACE FUNCTION update_session_score()
 RETURNS TRIGGER AS $$
@@ -223,6 +221,7 @@ CREATE TRIGGER set_score_updated AFTER INSERT OR UPDATE ON workout_set
 FOR EACH ROW EXECUTE PROCEDURE set_score_updated()
 """)
 # update workout_session trigger after changing the exercise score
+# Todo: update session on insert exercise does not work
 exercise_score_updated_func = DDL("""
 CREATE OR REPLACE FUNCTION exercise_score_updated()
 RETURNS TRIGGER AS $$

@@ -6,19 +6,14 @@
 from flask import current_app as app, jsonify
 from sqlalchemy import select
 
+from . import db
 from .models import WorkoutSessionModel
 from .schemas import WorkoutSessionSchema
 
 
 @app.route('/', methods=['GET'])
 def home():
-    return jsonify(f'{app.config}')
-
-
-# sanity check route
-@app.route('/ping', methods=['GET'])
-def ping_pong():
-    return jsonify('pong!')
+    return jsonify(f'Mis dihei isch dis dihei.')
 
 
 @app.route('/workout_sessions', methods=['GET'])
@@ -28,10 +23,10 @@ def workout_sessions():
 
     stmt = select(WorkoutSessionModel)
 
-    res = app.db_session.execute(stmt).scalars().all()
+    res = db.session.execute(stmt).scalars().all()
     print(res)
-    # app.session.close() only closes the session, does not end it
-    # app.session.remove()
+
+    # todo: on dumping, it loads all the relations
     res = schema.dump(res, many=True)
     print(res)
 

@@ -3,17 +3,20 @@
 # Folder: server/speck_weg_backend File: __init__.py
 #
 
-from flask import Flask, jsonify, _app_ctx_stack
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask
 # Database migration: flask_migrate or alembic
 
 from .config import Config
+from .database import CRUD
 
 # instantiate the app
 app = Flask('speck_weg_backend')
+# Load the configuration
+# Todo: distinguish dev / test / prod
 app.config.from_object(Config)
-print(app.config)
-db = SQLAlchemy(app)
+
+# Set the database
+db = CRUD(app)
 
 # enable CORS
 # CORS(app, resources={r'/*': {'origins': '*'}})

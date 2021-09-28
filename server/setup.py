@@ -21,7 +21,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'psycopg2', 'sqlalchemy', 'flask'],
+        'psycopg2', 'sqlalchemy', 'flask',
+        'flask-sqlalchemy', 'flask-marshmallow', 'marshmallow-sqlalchemy'],
     python_requires='>=3.9',
     url='https://github.com/hochstibe/speck_weg',
     classifiers=[
