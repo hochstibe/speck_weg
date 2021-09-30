@@ -6,6 +6,8 @@ web app
 ```
 pip install -e .\server\speck_weg_backend
 ```
+* Problems on WSL to install Python3.9 / pip / create a venv
+* Pycharm cant use virtual environments on wsl anyways...
 
 ### Frontend
 * [WSL on Windows](https://docs.microsoft.com/en-us/windows/wsl/install)
@@ -17,6 +19,7 @@ pip install -e .\server\speck_weg_backend
 * Use NodeVersionManager nvm
 * [Vue / Flask Tutorial](https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/)
 * Try Vue 3.x instead of 2.x (Tutorial)
+* Set the terminal in Pycharm to `"C:\Users\stefa\AppData\Local\Microsoft\WindowsApps\ubuntu.exe" run`
 ```
 # wsl
 wsl --install -d ubuntu
