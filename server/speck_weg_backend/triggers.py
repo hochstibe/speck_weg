@@ -114,7 +114,7 @@ DECLARE
     -- tex_count integer := 0;
     score float := 0.0;
 BEGIN
-    NEW."comment" := '';
+    -- -- NEW."comment" := '';
     -- loop through the planned exercises
     -- calculate the score for if there is a done exercise
     FOR rec IN
@@ -132,25 +132,8 @@ BEGIN
         WHERE tpr.tpr_id = NEW.wse_tpr_id
         ORDER BY tpe."sequence"
     LOOP
-        -- tex_count := tex_count + 1;
-        -- for each planned exercise: select the score (if it was done)
-        -- SELECT wex.score 
-        --     INTO wex_score
-        --     FROM workout_exercise wex
-        --     WHERE wex.wex_tpe_id = tpe_row.tpe_id AND wex.wex_wse_id = new.wse_id
-        --     LIMIT 1;
-        -- add the score
-        -- IF wex_score IS NOT NULL THEN
-        -- score := score + wex_score;
-        -- END IF;
         score := score + rec.wex_score::FLOAT / rec.tpe_count;
-        NEW."comment" := NEW."comment" || ' ' || rec."sequence";
-        -- IF tpe_row.wex_score IS NOT NULL THEN
-        --     score := score + tpe_row.wex_score::FLOAT;
-        --     NEW."comment" := NEW."comment" || ' ' || tpe_row.score;
-        -- ELSE
-        --     NEW."comment" := NEW."comment" || ' skipped tpe ' || tpe_row.tpe_id;
-        -- END IF;
+        -- -- NEW."comment" := NEW."comment" || ' ' || rec."sequence";
     END LOOP;
     -- mean: score per planned exercises
     -- score := score::FLOAT / tex_count;
@@ -200,8 +183,9 @@ END;
 $$ LANGUAGE PLPGSQL;
 """)
 baseline_weight_updated_trigger = DDL("""
-CREATE TRIGGER baseline_weight_updated AFTER INSERT OR UPDATE ON training_exercise
-FOR EACH ROW EXECUTE PROCEDURE baseline_weight_updated();
+CREATE TRIGGER baseline_weight_updated
+    AFTER INSERT OR UPDATE ON training_exercise
+    FOR EACH ROW EXECUTE PROCEDURE baseline_weight_updated();
 """)
 # update workout exercise trigger after changing the set score
 set_score_updated_func = DDL("""
@@ -210,15 +194,16 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF (TG_OP = 'INSERT') OR OLD.score <> NEW.score THEN
         -- Initialize an irrelevant update statement to activate the other trigger
-        UPDATE workout_exercise SET score = 3 WHERE wex_id = NEW.wst_wex_id;
+        UPDATE workout_exercise SET score = 0 WHERE wex_id = NEW.wst_wex_id;
     END IF;
 RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
 """)
 set_score_updated_trigger = DDL("""
-CREATE TRIGGER set_score_updated AFTER INSERT OR UPDATE ON workout_set
-FOR EACH ROW EXECUTE PROCEDURE set_score_updated()
+CREATE TRIGGER set_score_updated
+    AFTER INSERT OR UPDATE ON workout_set
+    FOR EACH ROW EXECUTE PROCEDURE set_score_updated()
 """)
 # update workout_session trigger after changing the exercise score
 # Todo: update session on insert exercise does not work
@@ -226,15 +211,17 @@ exercise_score_updated_func = DDL("""
 CREATE OR REPLACE FUNCTION exercise_score_updated()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF (TG_OP = 'INSERT') OR OLD.score <> NEW.score THEN
+    IF (TG_OP = 'INSERT') OR (TG_OP = 'UPDATE') THEN
+        -- OLD.score <> NEW.score did not work --> use on every update
         -- Initialize an irrelevant update statement to activate the other trigger
-        UPDATE workout_session SET score = 4 WHERE wse_id = NEW.wex_wse_id;
+        UPDATE workout_session SET score = 0 WHERE wse_id = NEW.wex_wse_id;
     END IF;
 RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL
 """)
 exercise_score_updated_trigger = DDL("""
-CREATE TRIGGER exercise_score_updated AFTER INSERT OR UPDATE ON workout_exercise
-FOR EACH ROW EXECUTE PROCEDURE exercise_score_updated();
+CREATE TRIGGER exercise_score_updated
+    AFTER INSERT OR UPDATE ON workout_exercise
+    FOR EACH ROW EXECUTE PROCEDURE exercise_score_updated();
 """)

@@ -21,7 +21,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'psycopg2-binary', 'sqlalchemy', 'flask',
+        'psycopg2-binary', 'environs', 'sqlalchemy', 'flask',
         'flask-sqlalchemy', 'flask-marshmallow', 'marshmallow-sqlalchemy',
         'flask-cors'
     ],

@@ -16,9 +16,11 @@ if __name__ == '__main__':
     # models.Base.metadata.drop_all(engine)
     # models.Base.metadata.create_all(bind=engine)
     # Session = get_db_session(echo=True, drop_all=True)
+    print('connecting to the db')
     db.metadata.drop_all(db.engine)
     db.metadata.create_all(db.engine)
 
+    print('creating all models')
     usr1 = models.UserModel(
         first_name='Stefan', last_name='Hochuli',
         email='test@example.com', password='password', weight=72)
@@ -187,8 +189,8 @@ if __name__ == '__main__':
     #     print(type(session), session)
     # commits and closes the session
     # alternative: with SessionLocal() as session: ..... session.commit() end with
-    db.session.add(usr1)
-    db.session.add(tth1)
-    db.session.add(tth101)
-
+    print('persisting all models')
+    db.session.add_all([usr1, tth1, tth101])
     db.session.commit()
+
+    print('All models persisted in the database.')
