@@ -1,29 +1,35 @@
 # speck_weg
 # Stefan Hochuli, 30.09.2021,
-# Folder: server/speck_weg_backend/routes File: app.py
+# Folder: server/speck_weg_backend/routes File: speck_weg.py
 #
 
+from typing import Optional, Tuple, List, Dict, TYPE_CHECKING
+
+from . import Message, User, TrainingThemeCollection, TrainingProgramCollection, \
+    TrainingProgramExerciseCollection, WorkoutSessionCollection
+
+if TYPE_CHECKING:
+    from datetime import datetime
+    from ..models import TrainingProgramModel, WorkoutSessionModel
 
 
 class SpeckWeg:
-    def __init__(self, db: 'CRUD', **kwargs):
+    def __init__(self, **kwargs):
         # Additional arguments are passed to next inheritance
         super().__init__(**kwargs)
 
-        self.db = db
-
         # There must be one user in the database
         # self.usr = self.read_user()
-        self.user = User(self.db)
+        self.user = User()
 
         # instead of only storing the themes in the widgets, store them in lists
-        self.themes = TrainingThemeCollection(self.db)
+        self.themes = TrainingThemeCollection()
         self.current_tth_id: Optional[int] = None
-        self.programs = TrainingProgramCollection(self.db)
+        self.programs = TrainingProgramCollection()
         self.current_tpr_id: Optional[int] = None
-        self.exercises = TrainingProgramExerciseCollection(self.db)
+        self.exercises = TrainingProgramExerciseCollection()
         self.current_tpe_id: Optional[int] = None  # training_program_exercise is unique
-        self.workouts = WorkoutSessionCollection(self.db)
+        self.workouts = WorkoutSessionCollection()
         self.current_wse_id: Optional[int] = None
         self.current_wex_id: Optional[int] = None
 
@@ -69,8 +75,6 @@ class SpeckWeg:
         else:
             return None
 
-
-"""
     def theme_list_refresh(self, new: bool = False):
         # refreshes all lists (all depending on the theme)
 
@@ -291,4 +295,3 @@ class SpeckWeg:
             scores.append(wo.model.score)
 
         self.plot_data = (dates, scores)
-"""

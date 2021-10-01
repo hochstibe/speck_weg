@@ -8,6 +8,7 @@ from flask import Flask
 
 from .config import Config
 from .database import CRUD
+from .app.speck_weg import SpeckWeg
 
 # instantiate the app
 app = Flask('speck_weg_backend')
@@ -20,6 +21,9 @@ db = CRUD(app)
 
 # enable CORS
 # CORS(app, resources={r'/*': {'origins': '*'}})
+
+# Use the instance of the class SpeckWeg as the global application
+speck_weg = SpeckWeg()
 
 # get routes / models
 with app.app_context():
