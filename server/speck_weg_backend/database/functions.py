@@ -34,11 +34,11 @@ BEGIN
    -- AND counter < 5
    LOOP
       new_id = random_number();
-      EXECUTE 'SELECT (EXISTS (SELECT "id" FROM ' || tg_relid::regclass::text || ' WHERE "id"=$1))'
+      EXECUTE 'SELECT (EXISTS (SELECT rid FROM ' || tg_relid::regclass::text || ' WHERE rid=$1))'
         INTO tmp USING new_id;
       -- counter := counter + 1;
    END LOOP;
-   NEW.id := new_id;
+   NEW.rid := new_id;
    -- NEW.description := counter::TEXT;
    RETURN NEW;
 END;

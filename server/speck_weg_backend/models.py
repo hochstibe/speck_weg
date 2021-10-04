@@ -33,7 +33,7 @@ class UserModel(db.Model):
     __tablename__ = 'user'
 
     usr_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
-    rid = db.Column(db.Integer, nullable=True,
+    rid = db.Column(db.Integer, nullable=False, index=True,
                     server_default=FetchedValue(), server_onupdate=FetchedValue())
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255), nullable=False)
@@ -55,7 +55,7 @@ class TrainingThemeModel(db.Model):
     )
 
     tth_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
-    rid = db.Column(db.Integer, nullable=True,
+    rid = db.Column(db.Integer, nullable=False, index=True,
                     server_default=FetchedValue(), server_onupdate=FetchedValue())
     name = db.Column(db.String(63), nullable=False)
     description = db.Column(db.String(1023), nullable=True)
@@ -80,7 +80,7 @@ class TrainingProgramModel(db.Model):
 
     tpr_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     tpr_tth_id = db.Column(db.ForeignKey('training_theme.tth_id'), nullable=False)
-    rid = db.Column(db.Integer, nullable=True,
+    rid = db.Column(db.Integer, nullable=False, index=True,
                     server_default=FetchedValue(), server_onupdate=FetchedValue())
     name = db.Column(db.String(63), nullable=False)
     description = db.Column(db.String(1023), nullable=True)
@@ -105,7 +105,7 @@ class TrainingExerciseModel(db.Model):
 
     tex_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     tex_usr_id = db.Column(db.Integer, db.ForeignKey('user.usr_id'), nullable=True)
-    rid = db.Column(db.Integer, nullable=True,
+    rid = db.Column(db.Integer, nullable=False, index=True,
                     server_default=FetchedValue(), server_onupdate=FetchedValue())
     name = db.Column(db.String(63), nullable=False)
     description = db.Column(db.String(1023), nullable=True)
@@ -132,7 +132,7 @@ class TrainingProgramExerciseModel(db.Model):
     tpe_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     tpe_tpr_id = db.Column(db.ForeignKey('training_program.tpr_id'), nullable=False)
     tpe_tex_id = db.Column(db.ForeignKey('training_exercise.tex_id'), nullable=False)
-    rid = db.Column(db.Integer, nullable=True,
+    rid = db.Column(db.Integer, nullable=False, index=True,
                     server_default=FetchedValue(), server_onupdate=FetchedValue())
     sequence = db.Column(db.Integer, nullable=False)
 
@@ -156,7 +156,7 @@ class WorkoutSessionModel(db.Model):
 
     wse_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     wse_tpr_id = db.Column(db.ForeignKey('training_program.tpr_id'))
-    rid = db.Column(db.Integer, nullable=True,
+    rid = db.Column(db.Integer, nullable=False, index=True,
                     server_default=FetchedValue(), server_onupdate=FetchedValue())
     date = db.Column(db.DateTime(timezone=True), nullable=False,
                      server_default=func.current_timestamp())
@@ -183,7 +183,7 @@ class WorkoutExerciseModel(db.Model):
     wex_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     wex_wse_id = db.Column(db.ForeignKey('workout_session.wse_id'))
     wex_tpe_id = db.Column(db.ForeignKey('training_program_exercise.tpe_id'))
-    rid = db.Column(db.Integer, nullable=True,
+    rid = db.Column(db.Integer, nullable=False, index=True,
                     server_default=FetchedValue(), server_onupdate=FetchedValue())
     sequence = db.Column(db.Integer, nullable=False)  # same sequence as in tpe for each exercise
     score = db.Column(db.Float, nullable=True,  # Todo: other scores work with nullable=False
@@ -209,7 +209,7 @@ class WorkoutSetModel(db.Model):
 
     wst_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     wst_wex_id = db.Column(db.ForeignKey('workout_exercise.wex_id'))
-    rid = db.Column(db.Integer, nullable=True,
+    rid = db.Column(db.Integer, nullable=False, index=True,
                     server_default=FetchedValue(), server_onupdate=FetchedValue())
     set = db.Column(db.Integer, nullable=False)
     repetitions = db.Column(db.Integer, nullable=False)
