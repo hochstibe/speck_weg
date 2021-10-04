@@ -1,9 +1,50 @@
 # speck_weg
-# Stefan Hochuli, 24.09.2021,
-# Folder: server/speck_weg_backend File: triggers.py
+# Stefan Hochuli, 04.10.2021,
+# Folder: server/database File: functions.py
 #
 
 from sqlalchemy import DDL
+
+
+# Create a random integer between low / high
+random_number_func = DDL("""
+CREATE OR REPLACE FUNCTION random_number() 
+RETURNS INT AS
+$$
+DECLARE
+   low INT := 10 ^ 7;
+   high INT := 10 ^ 8 - 1;
+BEGIN
+   RETURN floor(random()* (high-low + 1) + low);
+END;
+$$ LANGUAGE PLPGSQL;
+""")
+
+# Before inserting: create a random id for hiding the incremental one
+# Todo: select statement with execute format ('SELECT ...')
+random_id_func = DDL("""
+CREATE OR REPLACE FUNCTION random_id_func()
+RETURNS TRIGGER AS $$
+DECLARE
+   -- counter INT := 0;
+   new_id INT;
+   tmp BOOLEAN := TRUE;
+BEGIN
+   WHILE tmp
+   -- AND counter < 5
+   LOOP
+      new_id = random_number();
+      EXECUTE 'SELECT (EXISTS (SELECT "id" FROM ' || tg_relid::regclass::text || ' WHERE "id"=$1))'
+        INTO tmp USING new_id;
+      -- counter := counter + 1;
+   END LOOP;
+   NEW.id := new_id;
+   -- NEW.description := counter::TEXT;
+   RETURN NEW;
+END;
+$$ LANGUAGE  PLPGSQL;
+""")
+
 
 # Before inserting /updating a training_exercise
 # set the attribute baseline_weight
@@ -20,11 +61,6 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
-""")
-update_baseline_weight_trigger = DDL("""
-CREATE TRIGGER update_baseline_weight
-    BEFORE INSERT OR UPDATE ON training_exercise
-    FOR EACH ROW EXECUTE PROCEDURE update_baseline_weight();
 """)
 
 # Before inserting /updating a workout_set
@@ -60,11 +96,6 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 """)
-update_set_score_trigger = DDL("""
-CREATE TRIGGER update_set_score
-    BEFORE INSERT OR UPDATE ON workout_set
-    FOR EACH ROW EXECUTE PROCEDURE update_set_score();
-""")
 
 # Before inserting /updating a workout_exercise
 # set the attribute score
@@ -97,11 +128,6 @@ begin
 END;
 $$ LANGUAGE PLPGSQL;
 """)
-update_exercise_score_trigger = DDL("""
-CREATE TRIGGER update_exercise_score
-    BEFORE INSERT OR UPDATE ON workout_exercise
-    FOR EACH ROW EXECUTE PROCEDURE update_exercise_score();
-""")
 
 # Before inserting /updating a workout_session
 # set the attribute score
@@ -120,9 +146,9 @@ BEGIN
     FOR rec IN
         SELECT
             tpe."sequence",
-            (select count(tpe.tpe_id) as tpe_count 
-             from training_program tpr 
-             left join training_program_exercise tpe on tpr.tpr_id = tpe.tpe_tpr_id 
+            (select count(tpe.tpe_id) as tpe_count
+             from training_program tpr
+             left join training_program_exercise tpe on tpr.tpr_id = tpe.tpe_tpr_id
              where tpr.tpr_id = NEW.wse_tpr_id) as tpe_count,
             COALESCE(wex.score, 0.0) AS wex_score
         FROM training_program tpr
@@ -142,11 +168,6 @@ BEGIN
 END;
 $$ LANGUAGE PLPGSQL;
 """)
-update_session_score_trigger = DDL("""
-CREATE TRIGGER update_session_score
-    BEFORE INSERT OR UPDATE ON workout_session
-    FOR EACH ROW EXECUTE PROCEDURE update_session_score();
-""")
 
 # update training_exercise trigger after changing the user_weight
 user_weight_updated_func = DDL("""
@@ -161,11 +182,6 @@ RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
 """)
-user_weight_updated_trigger = DDL("""
-CREATE TRIGGER update_user_weight
-    AFTER INSERT OR UPDATE ON "user"
-    FOR EACH ROW EXECUTE PROCEDURE user_weight_updated();
-""")
 # update workout_exercise trigger after changing the baseline_weight
 baseline_weight_updated_func = DDL("""
 CREATE OR REPLACE FUNCTION baseline_weight_updated()
@@ -174,18 +190,13 @@ BEGIN
     IF OLD.baseline_weight != NEW.baseline_weight THEN
         -- Initialize an irrelevant update statement to activate the other trigger
         UPDATE workout_set wst SET score = 2
-        FROM workout_exercise wex JOIN 
+        FROM workout_exercise wex JOIN
              training_program_exercise tpe ON wex.wex_tpe_id = tpe_id
         WHERE wst.wst_wex_id = wex.wex_id AND tpe.tpe_tex_id = NEW.tex_id;
     END IF;
     RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
-""")
-baseline_weight_updated_trigger = DDL("""
-CREATE TRIGGER baseline_weight_updated
-    AFTER INSERT OR UPDATE ON training_exercise
-    FOR EACH ROW EXECUTE PROCEDURE baseline_weight_updated();
 """)
 # update workout exercise trigger after changing the set score
 set_score_updated_func = DDL("""
@@ -200,13 +211,7 @@ RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL;
 """)
-set_score_updated_trigger = DDL("""
-CREATE TRIGGER set_score_updated
-    AFTER INSERT OR UPDATE ON workout_set
-    FOR EACH ROW EXECUTE PROCEDURE set_score_updated()
-""")
 # update workout_session trigger after changing the exercise score
-# Todo: update session on insert exercise does not work
 exercise_score_updated_func = DDL("""
 CREATE OR REPLACE FUNCTION exercise_score_updated()
 RETURNS TRIGGER AS $$
@@ -219,9 +224,4 @@ BEGIN
 RETURN NEW;
 END;
 $$ LANGUAGE PLPGSQL
-""")
-exercise_score_updated_trigger = DDL("""
-CREATE TRIGGER exercise_score_updated
-    AFTER INSERT OR UPDATE ON workout_exercise
-    FOR EACH ROW EXECUTE PROCEDURE exercise_score_updated();
 """)

@@ -3,19 +3,29 @@
 # Folder: server/speck_weg_backend File: models.py
 #
 
+from typing import Tuple, TYPE_CHECKING
+
+from sqlalchemy import FetchedValue
 from sqlalchemy.sql import func
 
 from .extensions import db
-from .triggers import (
-    update_baseline_weight_func, update_baseline_weight_trigger,
-    update_set_score_func, update_set_score_trigger,
-    update_exercise_score_func, update_exercise_score_trigger,
-    update_session_score_func, update_session_score_trigger,
-    user_weight_updated_func, user_weight_updated_trigger,
-    baseline_weight_updated_func, baseline_weight_updated_trigger,
-    set_score_updated_func, set_score_updated_trigger,
-    exercise_score_updated_func, exercise_score_updated_trigger
-)
+from .database.functions import random_number_func, random_id_func, \
+    update_baseline_weight_func, update_set_score_func,     \
+    update_exercise_score_func, update_session_score_func,    \
+    user_weight_updated_func, baseline_weight_updated_func,      \
+    set_score_updated_func, exercise_score_updated_func
+from .database.triggers import update_baseline_weight_trigger, update_set_score_trigger, \
+    update_exercise_score_trigger, update_session_score_trigger, \
+    user_weight_updated_trigger, baseline_weight_updated_trigger, \
+    set_score_updated_trigger, exercise_score_updated_trigger, \
+    random_id_user_trigger, random_id_training_theme_trigger, \
+    random_id_training_program_trigger, random_id_training_program_exercise_trigger, \
+    random_id_training_exercise_trigger, random_id_workout_session_trigger, \
+    random_id_workout_exercise_trigger, random_id_workout_set_trigger
+
+
+if TYPE_CHECKING:
+    from sqlalchemy import DDL
 
 
 class UserModel(db.Model):
@@ -23,6 +33,8 @@ class UserModel(db.Model):
     __tablename__ = 'user'
 
     usr_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
+    rid = db.Column(db.Integer, nullable=True,
+                    server_default=FetchedValue(), server_onupdate=FetchedValue())
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False)
@@ -43,6 +55,8 @@ class TrainingThemeModel(db.Model):
     )
 
     tth_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
+    rid = db.Column(db.Integer, nullable=True,
+                    server_default=FetchedValue(), server_onupdate=FetchedValue())
     name = db.Column(db.String(63), nullable=False)
     description = db.Column(db.String(1023), nullable=True)
     sequence = db.Column(db.Integer, nullable=False)
@@ -66,6 +80,8 @@ class TrainingProgramModel(db.Model):
 
     tpr_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     tpr_tth_id = db.Column(db.ForeignKey('training_theme.tth_id'), nullable=False)
+    rid = db.Column(db.Integer, nullable=True,
+                    server_default=FetchedValue(), server_onupdate=FetchedValue())
     name = db.Column(db.String(63), nullable=False)
     description = db.Column(db.String(1023), nullable=True)
     sequence = db.Column(db.Integer, nullable=False)
@@ -89,6 +105,8 @@ class TrainingExerciseModel(db.Model):
 
     tex_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     tex_usr_id = db.Column(db.Integer, db.ForeignKey('user.usr_id'), nullable=True)
+    rid = db.Column(db.Integer, nullable=True,
+                    server_default=FetchedValue(), server_onupdate=FetchedValue())
     name = db.Column(db.String(63), nullable=False)
     description = db.Column(db.String(1023), nullable=True)
     baseline_sets = db.Column(db.Integer, nullable=False)
@@ -114,6 +132,8 @@ class TrainingProgramExerciseModel(db.Model):
     tpe_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     tpe_tpr_id = db.Column(db.ForeignKey('training_program.tpr_id'), nullable=False)
     tpe_tex_id = db.Column(db.ForeignKey('training_exercise.tex_id'), nullable=False)
+    rid = db.Column(db.Integer, nullable=True,
+                    server_default=FetchedValue(), server_onupdate=FetchedValue())
     sequence = db.Column(db.Integer, nullable=False)
 
     # orm definitions
@@ -136,10 +156,13 @@ class WorkoutSessionModel(db.Model):
 
     wse_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     wse_tpr_id = db.Column(db.ForeignKey('training_program.tpr_id'))
+    rid = db.Column(db.Integer, nullable=True,
+                    server_default=FetchedValue(), server_onupdate=FetchedValue())
     date = db.Column(db.DateTime(timezone=True), nullable=False,
                      server_default=func.current_timestamp())
     comment = db.Column(db.String(1023), nullable=True)
-    score = db.Column(db.Float, nullable=True)
+    score = db.Column(db.Float, nullable=False,
+                      server_default=FetchedValue(), server_onupdate=FetchedValue())
 
     # orm definitions
     training_program = db.relationship('TrainingProgramModel', back_populates='workout_sessions')
@@ -160,8 +183,11 @@ class WorkoutExerciseModel(db.Model):
     wex_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     wex_wse_id = db.Column(db.ForeignKey('workout_session.wse_id'))
     wex_tpe_id = db.Column(db.ForeignKey('training_program_exercise.tpe_id'))
+    rid = db.Column(db.Integer, nullable=True,
+                    server_default=FetchedValue(), server_onupdate=FetchedValue())
     sequence = db.Column(db.Integer, nullable=False)  # same sequence as in tpe for each exercise
-    score = db.Column(db.Float, nullable=True)
+    score = db.Column(db.Float, nullable=True,  # Todo: other scores work with nullable=False
+                      server_default=FetchedValue(), server_onupdate=FetchedValue())
 
     # orm definitions
     workout_session = db.relationship('WorkoutSessionModel', back_populates='workout_exercises')
@@ -183,12 +209,15 @@ class WorkoutSetModel(db.Model):
 
     wst_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
     wst_wex_id = db.Column(db.ForeignKey('workout_exercise.wex_id'))
+    rid = db.Column(db.Integer, nullable=True,
+                    server_default=FetchedValue(), server_onupdate=FetchedValue())
     set = db.Column(db.Integer, nullable=False)
     repetitions = db.Column(db.Integer, nullable=False)
     weight = db.Column(db.Float, nullable=True)
     duration = db.Column(db.Float, nullable=True)
     comment = db.Column(db.String(1023), nullable=True)
-    score = db.Column(db.Float, nullable=True)
+    score = db.Column(db.Float, nullable=False,
+                      server_default=FetchedValue(), server_onupdate=FetchedValue())
 
     # orm definitions
     workout_exercise = db.relationship('WorkoutExerciseModel', back_populates='workout_sets')
@@ -199,92 +228,45 @@ class WorkoutSetModel(db.Model):
                f' score={self.score})'
 
 
-# Add the functions and triggers to the database
-# User: update tex
-db.event.listen(
-    UserModel.__table__,
-    'after_create',
-    user_weight_updated_func.execute_if(dialect='postgresql')
-)
-db.event.listen(
-    UserModel.__table__,
-    'after_create',
-    user_weight_updated_trigger.execute_if(dialect='postgresql')
-)
-# TrainingExercise: update baseline_weight
-db.event.listen(
-    TrainingExerciseModel.__table__,
-    'after_create',
-    update_baseline_weight_func.execute_if(dialect='postgresql')
-)
-db.event.listen(
-    TrainingExerciseModel.__table__,
-    'after_create',
-    update_baseline_weight_trigger.execute_if(dialect='postgresql')
-)
-# TrainingExercise: update workout_exercise
-db.event.listen(
-    TrainingExerciseModel.__table__,
-    'after_create',
-    baseline_weight_updated_func.execute_if(dialect='postgresql')
-)
-db.event.listen(
-    TrainingExerciseModel.__table__,
-    'after_create',
-    baseline_weight_updated_trigger.execute_if(dialect='postgresql')
-)
-# WorkoutSet: update score
-db.event.listen(
-    WorkoutSetModel.__table__,
-    'after_create',
-    update_set_score_func.execute_if(dialect='postgresql')
-)
-db.event.listen(
-    WorkoutSetModel.__table__,
-    'after_create',
-    update_set_score_trigger.execute_if(dialect='postgresql')
-)
-# WorkoutSet: update exercise score
-db.event.listen(
-    WorkoutSetModel.__table__,
-    'after_create',
-    set_score_updated_func.execute_if(dialect='postgresql')
-)
-db.event.listen(
-    WorkoutSetModel.__table__,
-    'after_create',
-    set_score_updated_trigger.execute_if(dialect='postgresql')
-)
-# WorkoutExercise: update score
-db.event.listen(
-    WorkoutExerciseModel.__table__,
-    'after_create',
-    update_exercise_score_func.execute_if(dialect='postgresql')
-)
-db.event.listen(
-    WorkoutExerciseModel.__table__,
-    'after_create',
-    update_exercise_score_trigger.execute_if(dialect='postgresql')
-)
-# WorkoutExercise: update session score
-db.event.listen(
-    WorkoutExerciseModel.__table__,
-    'after_create',
-    exercise_score_updated_func.execute_if(dialect='postgresql')
-)
-db.event.listen(
-    WorkoutExerciseModel.__table__,
-    'after_create',
-    exercise_score_updated_trigger.execute_if(dialect='postgresql')
-)
-# WorkoutSession: update score
-db.event.listen(
-    WorkoutSessionModel.__table__,
-    'after_create',
-    update_session_score_func.execute_if(dialect='postgresql')
-)
-db.event.listen(
-    WorkoutSessionModel.__table__,
-    'after_create',
-    update_session_score_trigger.execute_if(dialect='postgresql')
-)
+def register_ddl(mod, ddl_list: Tuple['DDL']):
+    # Add the functions to the database (register to the specific tables)
+    for trigger in ddl_list:
+        db.event.listen(
+            mod.__table__,
+            'after_create',
+            trigger.execute_if(dialect='postgresql')
+        )
+
+
+function_list = [
+    # random number / id are needed only once for all triggers
+    (UserModel, (user_weight_updated_func, random_number_func, random_id_func)),
+    (TrainingThemeModel, ()),
+    (TrainingProgramModel, ()),
+    (TrainingProgramExerciseModel, ()),
+    (TrainingExerciseModel, (update_baseline_weight_func, baseline_weight_updated_func)),
+    (WorkoutSetModel, (update_set_score_func, set_score_updated_func)),
+    (WorkoutExerciseModel, (update_exercise_score_func, exercise_score_updated_func)),
+    (WorkoutSessionModel, (update_session_score_func, )),
+]
+
+trigger_list = [
+    (UserModel, (user_weight_updated_trigger, random_id_user_trigger)),
+    (TrainingThemeModel, (random_id_training_theme_trigger, )),
+    (TrainingProgramModel, (random_id_training_program_trigger, )),
+    (TrainingProgramExerciseModel, (random_id_training_program_exercise_trigger, )),
+    (TrainingExerciseModel, (update_baseline_weight_trigger, baseline_weight_updated_trigger,
+                             random_id_training_exercise_trigger)),
+    (WorkoutSetModel, (update_set_score_trigger, set_score_updated_trigger,
+                       random_id_workout_set_trigger)),
+    (WorkoutExerciseModel, (update_exercise_score_trigger, exercise_score_updated_trigger,
+                            random_id_workout_exercise_trigger)),
+    (WorkoutSessionModel, (update_session_score_trigger, random_id_workout_session_trigger)),
+]
+
+
+for model, functions in function_list:
+    register_ddl(model, functions)
+
+for model, triggers in trigger_list:
+    register_ddl(model, triggers)

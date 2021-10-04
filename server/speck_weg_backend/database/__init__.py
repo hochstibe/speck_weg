@@ -1,7 +1,8 @@
 # speck_weg
-# Stefan Hochuli, 28.09.2021,
-# Folder: server/speck_weg_backend File: database.py
+# Stefan Hochuli, 04.10.2021,
+# Folder: server/database File: __init__.py
 #
+
 
 from typing import List, Union, Any, Type, TYPE_CHECKING
 
@@ -30,7 +31,7 @@ class CRUD(SQLAlchemy):
     def __init__(self, app: 'Flask' = None, drop_all=False):
 
         super().__init__(app=app, metadata=metadata)
-        
+
         if drop_all:
             self.metadata.drop_all(self.engine)
             self.metadata.create_all(self.engine)
