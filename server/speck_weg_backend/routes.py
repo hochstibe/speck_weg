@@ -6,7 +6,7 @@
 from flask import current_app as app, jsonify
 from sqlalchemy import select
 
-from . import db
+from .extensions import db
 from .models import WorkoutSessionModel
 from .schemas import WorkoutSessionSchema
 

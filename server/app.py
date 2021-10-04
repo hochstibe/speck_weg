@@ -4,9 +4,9 @@
 #
 
 
-from server.speck_weg_backend import app
+from server.speck_weg_backend import create_app
 
 
 if __name__ == '__main__':
-
+    app = create_app()
     app.run()

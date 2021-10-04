@@ -8,7 +8,6 @@ from typing import List, Union, Any, Type, TYPE_CHECKING
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import select, MetaData
 
-# from . import db
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import DeclarativeMeta
@@ -28,7 +27,7 @@ metadata = MetaData(
 
 class CRUD(SQLAlchemy):
 
-    def __init__(self, app: 'Flask', drop_all=False):
+    def __init__(self, app: 'Flask' = None, drop_all=False):
 
         super().__init__(app=app, metadata=metadata)
         

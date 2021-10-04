@@ -3,19 +3,16 @@
 # Folder: speck_weg/app File: workout_exercise.py
 #
 
-from typing import Optional, Union, List, TYPE_CHECKING
+from typing import Optional, Union, List
 
 from sqlalchemy import select, and_
 from sqlalchemy.orm import joinedload
 
-from .. import db
+from ..extensions import db
 from ..models import (
     WorkoutSessionModel, WorkoutExerciseModel,
     TrainingExerciseModel, TrainingProgramExerciseModel
 )
-
-if TYPE_CHECKING:
-    from ..db import CRUD
 
 
 class WorkoutExerciseSet:

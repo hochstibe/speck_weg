@@ -5,7 +5,6 @@
 
 from typing import Optional, Union, Dict, Tuple, TYPE_CHECKING
 
-from .. import db
 from .message import Message
 from .workout_session import WorkoutSession
 
@@ -21,7 +20,7 @@ class Workout:
         # Additional arguments are passed to next inheritance
         super().__init__(**kwargs)
 
-        self.workout_session = WorkoutSession(db, tpr, wse)
+        self.workout_session = WorkoutSession(tpr, wse)
 
         # default messages
         self.messages: Dict[str, 'Message'] = dict()

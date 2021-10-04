@@ -8,7 +8,7 @@ from typing import List, Tuple, Optional, Union
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
-from .. import db
+from ..extensions import db
 from .workout_exercise import WorkoutExerciseSet
 from ..models import (TrainingProgramModel, WorkoutSessionModel)
 
@@ -146,4 +146,4 @@ class WorkoutSessionCollection:
                 WorkoutSessionModel.date)
 
         model_list = list(db.read_stmt(stmt))
-        self.workout_list = [WorkoutSession(self.db, wse=wse) for wse in model_list]
+        self.workout_list = [WorkoutSession(wse=wse) for wse in model_list]

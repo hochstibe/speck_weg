@@ -7,7 +7,7 @@ from typing import Optional, List
 
 from sqlalchemy import select, update, bindparam
 
-from .. import db
+from ..extensions import db
 from ..models import TrainingThemeModel
 
 

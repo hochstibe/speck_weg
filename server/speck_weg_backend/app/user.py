@@ -7,7 +7,7 @@ from typing import Optional, Union
 
 from sqlalchemy import select
 
-from .. import db
+from ..extensions import db
 from ..models import UserModel
 
 

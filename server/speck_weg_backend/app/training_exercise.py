@@ -8,7 +8,7 @@ from typing import List, Optional, Tuple
 from sqlalchemy import select, update, bindparam, func
 from sqlalchemy.orm import joinedload
 
-from .. import db
+from ..extensions import db
 from ..models import (TrainingProgramExerciseModel, TrainingProgramModel,
                       UserModel, TrainingExerciseModel)
 

@@ -5,7 +5,7 @@
 
 from sqlalchemy.sql import func
 
-from . import db
+from .extensions import db
 from .triggers import (
     update_baseline_weight_func, update_baseline_weight_trigger,
     update_set_score_func, update_set_score_trigger,
