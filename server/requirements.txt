@@ -6,6 +6,10 @@ flask-cors==3.0.10
 flask-sqlalchemy==2.5.1
 flask-marshmallow==0.14.0
 marshmallow-sqlalchemy==0.26.1
-pytest
+passlib==1.7.4
+argon2-cffi==21.1.0
+flask-jwt-extended==4.3.0
+pytest==6.2.5
+coverage==6.0
 flake8==3.9.2
 tox==3.24.4

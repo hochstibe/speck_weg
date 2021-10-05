@@ -3,20 +3,36 @@
 # Folder: server/speck_weg_backend File: schemas.py
 #
 
-from marshmallow import Schema, fields
-from marshmallow.validate import Length
+# from marshmallow import Schema, fields
+# from marshmallow.validate import Length
+from marshmallow import pre_load
+
+from .extensions import ma, hash_ctx
+from .models import UserModel
 
 
-class UserSchema(Schema):
+class UserSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = UserModel
 
-    usr_id = fields.Integer()
-    first_name = fields.String(validate=Length(255))
-    last_name = fields.String(validate=Length(255))
-    email = fields.Email(validate=Length(255))
-    password = fields.String(validate=Length(255))  # load only?
-    weight = fields.Float()
+    usr_id = ma.auto_field()
+    rid = ma.auto_field()
+    first_name = ma.auto_field()  # The length validation is imported from the model
+    last_name = ma.auto_field()
+    email = ma.auto_field()
+    password = ma.auto_field(load_only=True)  # load only?
+    weight = ma.auto_field()
+
+    # ORM -> on user not required
+    # training_themes = ma.auto_field()
+
+    @pre_load
+    def password(self, in_data, **kwargs):
+        # Hashes the password on loading
+        in_data['password'] = hash_ctx.hash(in_data['password'])
 
 
+"""
 class TrainingThemeSchema(Schema):
 
     tth_id = fields.Integer()
@@ -94,3 +110,4 @@ class WorkoutSetSchema(Schema):
     duration = fields.Float()
     comment = fields.String(validate=Length(1023))
     score = fields.Float()
+"""

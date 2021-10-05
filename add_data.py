@@ -4,7 +4,7 @@
 #
 
 from server.speck_weg_backend import create_app, models
-from server.speck_weg_backend.extensions import db
+from server.speck_weg_backend.extensions import db, hash_ctx
 
 
 if __name__ == '__main__':
@@ -19,10 +19,13 @@ if __name__ == '__main__':
         db.metadata.drop_all(db.engine)
         db.metadata.create_all(db.engine)
 
+        print('hashing the password')
+        pw = hash_ctx.hash('password')
+
         print('creating all models')
         usr1 = models.UserModel(
             first_name='Stefan', last_name='Hochuli',
-            email='test@example.com', password='password', weight=72)
+            email='test@example.com', password=pw, weight=72)
         tth1 = models.TrainingThemeModel(user=usr1, name='Beastmaker 1000', sequence=1)
         tpr1 = models.TrainingProgramModel(name='5a', sequence=2, training_theme=tth1)
         tpr2 = models.TrainingProgramModel(name='5b', sequence=3, training_theme=tth1)

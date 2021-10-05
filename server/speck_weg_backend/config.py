@@ -36,3 +36,10 @@ class Config:
     database = env.str('POSTGRES_DB')
     SQLALCHEMY_DATABASE_URI = f'postgresql+psycopg2://{user}:{password}@{host}:{port}/{database}'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # Security
+    # Hashing rounds
+    DEFAULT_HASH = env.str('DEFAULT_HASH')
+    PW_ROUNDS = env.int('PW_ROUNDS')
+    # JWT
+    JWT_SECRET_KEY = env.str('JWT_SECRET_KEY')

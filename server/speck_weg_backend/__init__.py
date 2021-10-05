@@ -7,17 +7,7 @@ from flask import Flask
 # Database migration: flask_migrate or alembic
 
 from .config import Config
-from .extensions import db
-
-
-def register_extensions(app: 'Flask'):
-    """
-    Register all external applications to the flask app
-
-    :param app: Initialized Flask application
-    :return: -
-    """
-    db.init_app(app)
+from .extensions import db, ma, hash_ctx, jwt
 
 
 def create_app():
@@ -38,3 +28,23 @@ def create_app():
         from . import routes, models  # noqa
 
     return app
+
+
+def register_extensions(app: 'Flask'):
+    """
+    Register all external applications to the flask app
+
+    :param app: Initialized Flask application
+    :return: -
+    """
+    # SQLAlchemy with CRUD methods
+    db.init_app(app)
+    ma.init_app(app)
+    # CryptContext for password hashing
+    hash_ctx.init_app(app)
+    # JWT
+    jwt.init_app(app)
+
+
+def register_blueprints(app: 'Flask'):
+    pass
