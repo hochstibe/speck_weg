@@ -41,6 +41,7 @@ class UserModel(db.Model):
     password = db.Column(db.String(255), nullable=False)
     weight = db.Column(db.Float, nullable=False)
 
+    training_themes = db.relationship('TrainingThemeModel', back_populates='user')
     training_exercises = db.relationship('TrainingExerciseModel', back_populates='user')
 
     def __repr__(self):
@@ -55,6 +56,7 @@ class TrainingThemeModel(db.Model):
     )
 
     tth_id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
+    tth_usr_id = db.Column(db.ForeignKey('user.usr_id'), nullable=False)
     rid = db.Column(db.Integer, nullable=False, index=True,
                     server_default=FetchedValue(), server_onupdate=FetchedValue())
     name = db.Column(db.String(63), nullable=False)
@@ -62,6 +64,7 @@ class TrainingThemeModel(db.Model):
     sequence = db.Column(db.Integer, nullable=False)
 
     # orm definitions
+    user = db.relationship('UserModel', back_populates='training_themes')
     training_programs = db.relationship(
         'TrainingProgramModel', back_populates='training_theme',
         order_by='asc(TrainingProgramModel.sequence), asc(TrainingProgramModel.name)')

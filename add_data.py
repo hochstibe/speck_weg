@@ -23,7 +23,7 @@ if __name__ == '__main__':
         usr1 = models.UserModel(
             first_name='Stefan', last_name='Hochuli',
             email='test@example.com', password='password', weight=72)
-        tth1 = models.TrainingThemeModel(name='Beastmaker 1000', sequence=1)
+        tth1 = models.TrainingThemeModel(user=usr1, name='Beastmaker 1000', sequence=1)
         tpr1 = models.TrainingProgramModel(name='5a', sequence=2, training_theme=tth1)
         tpr2 = models.TrainingProgramModel(name='5b', sequence=3, training_theme=tth1)
         tpr3 = models.TrainingProgramModel(name='5c', sequence=4, training_theme=tth1)
@@ -122,7 +122,7 @@ if __name__ == '__main__':
         tpe25 = models.TrainingProgramExerciseModel(training_program=tpr4, training_exercise=tex16,
                                                     sequence=7)
 
-        tth101 = models.TrainingThemeModel(name='Test', sequence=2)
+        tth101 = models.TrainingThemeModel(user=usr1, name='Test', sequence=2)
         tpr101 = models.TrainingProgramModel(name='Test', training_theme=tth101, sequence=1)
         tex101 = models.TrainingExerciseModel(name='weight', baseline_sets=2,
                                               baseline_repetitions=3, baseline_custom_weight=3.)
