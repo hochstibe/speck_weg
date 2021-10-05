@@ -11,7 +11,6 @@ pip install -e .\server\speck_weg_backend
 
 ### Frontend
 * [WSL on Windows](https://docs.microsoft.com/en-us/windows/wsl/install)
-* [Node.js on Windows](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-windows)
 * [Node.js on WSL](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/nodejs-on-wsl)
 * [Vue.js on WSL](https://docs.microsoft.com/en-us/windows/dev-environment/javascript/vue-on-wsl)
 * NodeJS / vueJS are usually deployed on Linux systems.
@@ -20,6 +19,10 @@ pip install -e .\server\speck_weg_backend
 * [Vue / Flask Tutorial](https://testdriven.io/blog/developing-a-single-page-app-with-flask-and-vuejs/)
 * Try Vue 3.x instead of 2.x (Tutorial)
 * Set the terminal in Pycharm to `"C:\Users\stefa\AppData\Local\Microsoft\WindowsApps\ubuntu.exe" run`
+* [Vue.js](https://v3.vuejs.org/guide)
+* [Vue-router](https://router.vuejs.org/guide)
+* SPA: Routing is done within the application, not by the server [info](https://next.router.vuejs.org/guide/essentials/history-mode.html#html5-mode)
+* Configure the server, to serve index.html, if it can't find any static asset
 ```
 # wsl
 wsl --install -d ubuntu
@@ -32,17 +35,26 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
 # install node
 nvm install node
 nvm install --lts
-mkdir speck_weg
-cd speck_weg
+cd documents/speck_weg
 # use the current node version for the project (not the lts)
 nvm use node
 
 # install vue (ubuntu terminal, speck_weg folder)
 npm install vue
 npm install -g @vue/cli
+vue create client
+cd client
+npm run serve
+# CLI customization -> manually select features
+# - Vue Version / Babel / Router / Linter
+# - Vue 3.
+# - Use history mode for the router
+# - linter AirBnB
+# --> it creates an app with vue.js and vue-router
 
 ```
 
+## Curl
 ```
 # GET -> assumes, that it is a GET request
 curl localhost:5000/
