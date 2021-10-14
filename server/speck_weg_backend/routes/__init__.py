@@ -25,11 +25,11 @@ def register_view(bp: 'Blueprint', method_view: Union['MethodView', 'MethodViewT
     :return: -
     """
     view_func = method_view.as_view(endpoint)
+    # POST -> without trailing slash
+    bp.add_url_rule(url[:-1], view_func=view_func, methods=['POST', ])
     # GET collection
     bp.add_url_rule(url, defaults={pk: None},
                     view_func=view_func, methods=['GET', ])
-    # POST
-    bp.add_url_rule(url, view_func=view_func, methods=['POST', ])
     # GET / PUT / DELETE single
     bp.add_url_rule(f'{url}<{pk_type}:{pk}>', view_func=view_func,
                     methods=['GET', 'PUT', 'DELETE'])

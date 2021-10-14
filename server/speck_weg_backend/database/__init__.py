@@ -107,13 +107,20 @@ class CRUD(SQLAlchemy):
             self.session.execute(stmt, payload)
         self.session.commit()
 
-    def delete(self, obj: Union[List, 'DeclarativeMeta'] = None, stmt=None):
+    def delete_stmt(self, stmt):
 
         try:
-            if stmt:
-                # delete(Model).where(Model.id == id)
-                self.session.execute(stmt)
-            elif isinstance(obj, (list, tuple)):
+            self.session.execute(stmt)
+            self.session.commit()
+
+        except Exception as exc:
+            print(exc)
+            raise exc
+
+    def delete(self, obj: Union[List, 'DeclarativeMeta'] = None):
+
+        try:
+            if isinstance(obj, (list, tuple)):
                 for o in obj:
                     self.session.delete(o)
             else:

@@ -3,7 +3,7 @@
 # Folder: server/speck_weg_backend/routes File: heroes.py
 #
 
-from flask import jsonify, request
+from flask import jsonify, request, make_response
 from flask.views import MethodView
 from sqlalchemy import select, update, delete, func
 from marshmallow import EXCLUDE
@@ -18,9 +18,9 @@ class HeroAPI(MethodView):
 
     schema = HeroSchema()
 
-    def get_single(self, hid):
+    def get_single(self, hero_id):
 
-        stmt = select(HeroModel).where(HeroModel.id == hid)
+        stmt = select(HeroModel).where(HeroModel.id == hero_id)
         res = db.read_one(stmt)
 
         print(res)
@@ -61,7 +61,6 @@ class HeroAPI(MethodView):
         model = HeroModel(**data)
         db.create(model)
         res = self.schema.dump(model, many=False)
-        print('new', res)
 
         return jsonify(res)
 
@@ -77,12 +76,13 @@ class HeroAPI(MethodView):
         stmt = update(HeroModel).where(HeroModel.id == hero_id)
         db.update(stmt=stmt, payload=data)
         # Todo: return codes, return the persisted object?
-        return '', 204
+
+        return make_response(jsonify(), 204)
 
     @staticmethod
     def delete(hero_id):
 
-        stmt = delete(HeroModel).where(HeroModel.id == hero_id)
-        db.delete(stmt=stmt)
+        stmt = delete(HeroModel).where(HeroModel == hero_id)
+        db.delete_stmt(stmt)
 
-        return '', 201
+        return make_response(jsonify(), 204)
