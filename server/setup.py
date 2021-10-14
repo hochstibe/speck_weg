@@ -24,7 +24,7 @@ setup(
         'psycopg2-binary', 'environs', 'sqlalchemy', 'flask',
         'flask-sqlalchemy', 'flask-marshmallow', 'marshmallow-sqlalchemy',
         'flask-cors', 'flask-jwt-extended',
-        'passlib', 'argon2-cffi',
+        'passlib', 'argon2-cffi', 'marshmallow'
     ],
     python_requires='>=3.9',
     url='https://github.com/hochstibe/speck_weg',

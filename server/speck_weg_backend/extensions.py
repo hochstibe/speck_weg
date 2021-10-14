@@ -3,7 +3,7 @@
 # Folder: server/speck_weg_backend File: extensions.py
 #
 
-# from flask_cors import CORS
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 
 from .database import CRUD
@@ -18,4 +18,4 @@ ma = Marshmallow()
 
 hash_ctx = HashContext()
 jwt = JWTManager()
-# cors = CORS(resources={r'/*': {'origins': '*'}})
+cors = CORS(resources={r'/*': {'origins': '*'}})

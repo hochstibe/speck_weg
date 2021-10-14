@@ -28,6 +28,13 @@ if TYPE_CHECKING:
     from sqlalchemy import DDL
 
 
+class HeroModel(db.Model):
+    __tablename__ = 'hero'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement='auto')
+    name = db.Column(db.String, nullable=False
+                     )
+
 class UserModel(db.Model):
     # table definitions
     __tablename__ = 'user'

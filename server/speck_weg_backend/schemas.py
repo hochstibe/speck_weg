@@ -8,7 +8,15 @@
 from marshmallow import pre_load
 
 from .extensions import ma, hash_ctx
-from .models import UserModel
+from .models import UserModel, HeroModel
+
+
+class HeroSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = HeroModel
+
+    id = ma.auto_field(dump_only=True, skip=True)
+    name = ma.auto_field()
 
 
 class UserSchema(ma.SQLAlchemySchema):

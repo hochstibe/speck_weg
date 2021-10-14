@@ -7,25 +7,29 @@ from flask import Flask
 # Database migration: flask_migrate or alembic
 
 from .config import Config
-from .extensions import db, ma, hash_ctx, jwt
+from .extensions import db, ma, hash_ctx, jwt, cors
+from .routes import api_bp
 
 
-def create_app():
+def create_app(env: str = None):
     # instantiate the app
     app = Flask('speck_weg_backend')
     # Load the configuration
     # Todo: distinguish dev / test / prod
-    app.config.from_object(Config)
+    app.config.from_object(Config(env))
 
+    # Register all extensions to the application
     register_extensions(app)
+    # Register all (nested) blueprints to  the application
+    register_blueprints(app)
 
-    # Use the instance of the class SpeckWeg as the global application
-    # Probably not possible --> related to the session of the logged-in user
-    # speck_weg = SpeckWeg()
+    # with app.app_context():
+    # from . import routes, models  # noqa
 
-    # get routes / models
-    with app.app_context():
-        from . import routes, models  # noqa
+    # Home route
+    @app.route('/', methods=['GET'])
+    def home():
+        return 'Mis dihei isch dis dihei.', 200
 
     return app
 
@@ -44,7 +48,10 @@ def register_extensions(app: 'Flask'):
     hash_ctx.init_app(app)
     # JWT
     jwt.init_app(app)
+    # CORS
+    cors.init_app(app)
 
 
 def register_blueprints(app: 'Flask'):
-    pass
+    app.register_blueprint(api_bp)
+

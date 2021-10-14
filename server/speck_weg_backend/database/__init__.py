@@ -107,10 +107,13 @@ class CRUD(SQLAlchemy):
             self.session.execute(stmt, payload)
         self.session.commit()
 
-    def delete(self, obj: Union[List, 'DeclarativeMeta']):
+    def delete(self, obj: Union[List, 'DeclarativeMeta'] = None, stmt=None):
 
         try:
-            if isinstance(obj, (list, tuple)):
+            if stmt:
+                # delete(Model).where(Model.id == id)
+                self.session.execute(stmt)
+            elif isinstance(obj, (list, tuple)):
                 for o in obj:
                     self.session.delete(o)
             else:

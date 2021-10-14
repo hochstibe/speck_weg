@@ -3,6 +3,8 @@
 # Folder: server/speck_weg_backend File: config.py
 #
 
+import os
+
 from pathlib import Path
 
 from environs import Env
@@ -25,6 +27,8 @@ class Config:
     file = folder / '.env.dev'
     env.read_env(file)
 
+    # Get the configuration from the environment
+
     # Develop mode
     ENV = env.str('FLASK_ENV', default='development')
 
@@ -43,3 +47,9 @@ class Config:
     PW_ROUNDS = env.int('PW_ROUNDS')
     # JWT
     JWT_SECRET_KEY = env.str('JWT_SECRET_KEY')
+
+    def __init__(self, env: str = None):
+        # Only used for the testing environment at the moment
+        if env:
+            if env == 'testing':
+                self.TESTING = True

@@ -23,6 +23,21 @@ if __name__ == '__main__':
         pw = hash_ctx.hash('password')
 
         print('creating all models')
+        # Add all Heroes
+        h1 = models.HeroModel(name='Dr Nice')
+        h2 = models.HeroModel(name='Narco')
+        h3 = models.HeroModel(name='Bombasto')
+        h4 = models.HeroModel(name='Celeritas')
+        h5 = models.HeroModel(name='Magneta')
+        h6 = models.HeroModel(name='RubberMan')
+        h7 = models.HeroModel(name='Dynama')
+        h8 = models.HeroModel(name='Dr IQ')
+        h9 = models.HeroModel(name='Magma')
+        h0 = models.HeroModel(name='Tornado')
+        db.session.add_all([h1, h2, h3, h4, h5, h6, h7, h8, h9, h0])
+        db.session.commit()
+
+
         usr1 = models.UserModel(
             first_name='Stefan', last_name='Hochuli',
             email='test@example.com', password=pw, weight=72)
