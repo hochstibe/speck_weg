@@ -47,9 +47,15 @@ class Config:
     PW_ROUNDS = env.int('PW_ROUNDS')
     # JWT
     JWT_SECRET_KEY = env.str('JWT_SECRET_KEY')
+    JWT_COOKIE_SECURE = False
+    JWT_TOKEN_LOCATION = ['cookies']
+    # JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)  # only for refreshing the tokens
 
     def __init__(self, env: str = None):
         # Only used for the testing environment at the moment
         if env:
             if env == 'testing':
                 self.TESTING = True
+            elif env == 'production':
+                self.JWT_COOKIE_SECURE = True
+                # Todo: change secret key (maybe secrets.token_hex() or anything else)

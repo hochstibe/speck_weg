@@ -35,6 +35,7 @@ def register_view(bp: 'Blueprint', method_view: Union['MethodView', 'MethodViewT
                     methods=['GET', 'PUT', 'DELETE'])
 
 
+auth_bp = Blueprint('auth', __name__)
 api_bp = Blueprint('api', __name__, url_prefix='/api')
 hero_bp = Blueprint('heroes', __name__, url_prefix='/heroes')
 

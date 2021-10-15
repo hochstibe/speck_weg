@@ -33,8 +33,9 @@ class HeroAPI(MethodView):
         name = request.args.get('name', None)
 
         if name:
-            stmt = select(HeroModel).where(
-                func.lower(HeroModel.name) == name.lower()).order_by(HeroModel.name)
+            stmt = select(HeroModel).where(  # case insensitive search
+                HeroModel.name.ilike(f'%{name}%')).order_by(HeroModel.name)
+
         else:
             stmt = select(HeroModel).order_by(HeroModel.name)
 
@@ -82,7 +83,7 @@ class HeroAPI(MethodView):
     @staticmethod
     def delete(hero_id):
 
-        stmt = delete(HeroModel).where(HeroModel == hero_id)
+        stmt = delete(HeroModel).where(HeroModel.id == hero_id)
         db.delete_stmt(stmt)
 
         return make_response(jsonify(), 204)

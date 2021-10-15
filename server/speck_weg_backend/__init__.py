@@ -3,7 +3,8 @@
 # Folder: server/speck_weg_backend File: __init__.py
 #
 
-from flask import Flask
+from flask import Flask, jsonify
+from flask_jwt_extended import jwt_required
 # Database migration: flask_migrate or alembic
 
 from .config import Config
@@ -30,6 +31,11 @@ def create_app(env: str = None):
     @app.route('/', methods=['GET'])
     def home():
         return 'Mis dihei isch dis dihei.', 200
+
+    @app.route("/protected", methods=["GET", "POST"])
+    @jwt_required()
+    def protected():
+        return jsonify(foo="bar")
 
     return app
 

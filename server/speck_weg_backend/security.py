@@ -23,3 +23,4 @@ class HashContext(CryptContext):
 
         self.update(default=default_hash)
         self.update(argon2__default_rounds=rounds)
+
